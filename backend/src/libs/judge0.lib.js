@@ -13,8 +13,19 @@ export const getJudge0LanguageId = (language)=>{
 
 
 export const submitBatch = async (submissions)=>{
-    const {data} = await axios.post(`${process.env.JUDGE0_API_URL}/submissions/batch?base64_encoded=false`,{
-        submissions
+    const {data} = await axios.post(`https://judge0-ce.p.rapidapi.com/submissions/batch`,{
+        params: {
+            base64_encoded: 'true'
+        },
+        headers:{
+            "x-rapidapi-host": process.env.JUDGE0_RAPID_API_HOST,
+            "x-rapidapi-key": process.env.JUDGE0_RAPID_API_KEY,
+            "Content-Type": "application/json",
+
+        },
+        data:{
+            submissions
+        }
     });
 
     return data;
