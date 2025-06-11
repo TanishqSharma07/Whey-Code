@@ -1,75 +1,77 @@
 import axios from "axios";
 
+export const getJudge0LanguageId = (language) => {
+	const langMap = {
+		PYTHON: 71,
+		JAVASCRIPT: 63,
+		CPP: 54,
+	};
 
-export const getJudge0LanguageId = (language)=>{
-    const langMap = {
-        "PYTHON": 71,
-        "JAVASCRIPT": 63,
-        "CPP": 54,
-    }
+	return langMap[language.toUpperCase()] || null;
+};
 
-    return langMap[language.toUpperCase()] || null;
-}
+export const submitBatch = async (submissions) => {
+	const { data } = await axios.post(
+		`https://judge0-ce.p.rapidapi.com/submissions/batch`,
+		{
+			submissions,
+		},
+		{
+			headers: {
+				"x-rapidapi-host": process.env.JUDGE0_RAPID_API_HOST,
+				"x-rapidapi-key": process.env.JUDGE0_RAPID_API_KEY,
+				"Content-Type": "application/json",
+			},
+			params: {
+				base64_encoded: "true",
+			},
+		}
+	);
 
+	return data;
+};
 
-export const submitBatch = async (submissions)=>{
-    const {data} = await axios.post(`https://judge0-ce.p.rapidapi.com/submissions/batch`,{
-        params: {
-            base64_encoded: 'true'
-        },
-        headers:{
-            "x-rapidapi-host": process.env.JUDGE0_RAPID_API_HOST,
-            "x-rapidapi-key": process.env.JUDGE0_RAPID_API_KEY,
-            "Content-Type": "application/json",
+const sleep = (ms) => {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+};
 
-        },
-        data:{
-            submissions
-        }
-    });
+export const pollBatchResults = async (tokens) => {
+	let isAllDone = false;
 
-    return data;
+	while (!isAllDone) {
+		const { data } = await axios.get(
+			`https://judge0-ce.p.rapidapi.com/submissions/batch`,
+			{
+				params: {
+					tokens: Array.isArray(tokens) ? tokens.join(",") : "",
+					base64_encoded: false,
+				},
+				headers: {
+					"x-rapidapi-key": process.env.JUDGE0_RAPID_API_KEY,
+					"x-rapidapi-host": process.env.JUDGE0_RAPID_API_HOST,
+				},
+			}
+		);
 
-}
+		const results = data.submissions;
 
-const sleep = (ms)=>{
-    return new Promise((resolve)=> setTimeout(resolve, ms))
-}
+		// Check if all submissions have completed processing (status.id >= 3 indicates completion)
+		isAllDone = results.every((r) => {
+			return r.status.id >= 3;
+		});
 
-export const pollBatchResults = async (tokens)=>{
+		if (isAllDone) return results;
 
+		await sleep(1000);
+	}
+};
 
-    while(true){
-        const {data} = await axios.get(`${process.env.JUDGE0_API_URL}/submissions/batch`,{
-            params:{
-                tokens: tokens.join(","),
-                base64_encoded:false,
-            }
-        })
+export const getLanguageName = (langaugeId) => {
+	const LANGUAGE_NAMES = {
+		63: "JavaScript",
+		71: "Python",
+		54: "CPP",
+	};
 
-        const results = data.submissions;
-
-        const isAllDone = results.every((r)=>{
-            return r.status.id >=3
-        })
-
-        if(isAllDone) return results;
-
-        await sleep(1000);
-
-
-    }
-
-}
-
-
-export const getLanguageName= (langaugeId)=>{
-    const LANGUAGE_NAMES = {
-        63: "JavaScript",
-        71: "Python",
-        54: "CPP",
-    }
-
-    return LANGUAGE_NAMES[langaugeId] || "Unknown";
-
-}
+	return LANGUAGE_NAMES[langaugeId] || "Unknown";
+};
