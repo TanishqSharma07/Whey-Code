@@ -23,7 +23,7 @@ export const submitBatch = async (submissions) => {
 				"Content-Type": "application/json",
 			},
 			params: {
-				base64_encoded: "true",
+				base64_encoded: "false",
 			},
 		}
 	);
