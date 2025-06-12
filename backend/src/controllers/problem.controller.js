@@ -16,7 +16,7 @@ export const createProblem = async (req, res) => {
 		constraints,
 		testcases,
 		codeSnippets,
-		referenceSolution,
+		referenceSolutions,
 	} = req.body;
 
 	//check user role for admin
@@ -28,7 +28,7 @@ export const createProblem = async (req, res) => {
 	//loop through each references sol for diff lang
 
 	try {
-		for (const [language, solutionCode] of Object.entries(referenceSolution)) {
+		for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
 			const languageId = getJudge0LanguageId(language);
 
 			if (!languageId) {
@@ -73,7 +73,7 @@ export const createProblem = async (req, res) => {
 				constraints,
 				testcases,
 				codeSnippets,
-				referenceSolution,
+				referenceSolutions,
 				userId: req.user.id,
 			},
 		});
@@ -150,7 +150,7 @@ export const updateProblem = async (req, res) => {
 		constraints,
 		testcases,
 		codeSnippets,
-		referenceSolution,
+		referenceSolutions,
 	} = req.body;
 
 	// Iterate through each language in the reference solution to validate the test cases.
@@ -160,7 +160,7 @@ export const updateProblem = async (req, res) => {
 	// If any test case fails, return an error response indicating the failure.
 
 	try {
-		for (const [language, solutionCode] of Object.entries(referenceSolution)) {
+		for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
 			const languageId = getJudge0LanguageId(language);
 
 			if (!languageId) {
@@ -228,7 +228,7 @@ export const updateProblem = async (req, res) => {
 				constraints,
 				testcases,
 				codeSnippets,
-				referenceSolution,
+				referenceSolutions,
 				userId: req.user.id,
 			},
 		});
@@ -278,12 +278,12 @@ export const getProblemsSolvedByUser = async (req, res) => {
 	try {
 		const problems = await db.problem.findMany({
 			where: {
-				slovedBy: {
+				solvedBy: {
 					some: { userId: req.user.id },
 				},
 			},
 			include: {
-				slovedBy: {
+				solvedBy: {
 					where: {
 						userId: req.user.id,
 					},
