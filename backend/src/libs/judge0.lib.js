@@ -12,15 +12,16 @@ export const getJudge0LanguageId = (language) => {
 
 export const submitBatch = async (submissions) => {
 	const { data } = await axios.post(
-		`https://judge0-ce.p.rapidapi.com/submissions/batch`,
+		'https://judge0-ce.p.sulu.sh/submissions/batch',
 		{
 			submissions,
 		},
 		{
 			headers: {
-				"x-rapidapi-host": process.env.JUDGE0_RAPID_API_HOST,
-				"x-rapidapi-key": process.env.JUDGE0_RAPID_API_KEY,
 				"Content-Type": "application/json",
+				"Accept": 'application/json',
+    			"Authorization": `Bearer ${process.env.SULU_API_KEY}`,
+				
 			},
 			params: {
 				base64_encoded: "false",
@@ -40,15 +41,15 @@ export const pollBatchResults = async (tokens) => {
 
 	while (!isAllDone) {
 		const { data } = await axios.get(
-			`https://judge0-ce.p.rapidapi.com/submissions/batch`,
+			'https://judge0-ce.p.sulu.sh/submissions/batch',
 			{
 				params: {
 					tokens: Array.isArray(tokens) ? tokens.join(",") : "",
 					base64_encoded: false,
 				},
 				headers: {
-					"x-rapidapi-key": process.env.JUDGE0_RAPID_API_KEY,
-					"x-rapidapi-host": process.env.JUDGE0_RAPID_API_HOST,
+					"Accept": 'application/json',
+    				"Authorization": `Bearer ${process.env.SULU_API_KEY}`,
 				},
 			}
 		);
