@@ -327,6 +327,7 @@ const ProblemPage = () => {
 
 							<div className="h-[600px] w-full">
 								<Editor
+									key={`${problem.id}-${selectedLanguage}`}
 									height="100%"
 									language={selectedLanguage.toLowerCase()}
 									theme="vs-dark"
