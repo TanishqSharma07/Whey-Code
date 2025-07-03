@@ -1,4 +1,5 @@
 # WheyCode
+![alt text](./frontend/public/image.png)
 
 WheyCode is a full-stack coding platform inspired by LeetCode. It helps users prepare for coding interviews and improve their coding skills by solving programming problems, managing playlists, and tracking submissions.
 
